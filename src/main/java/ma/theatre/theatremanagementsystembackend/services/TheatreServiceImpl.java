@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 
 @Service
 @Transactional
-@Slf4j
 public class TheatreServiceImpl implements TheatreService {
 
     private final CityRepository cityRepository;
@@ -54,7 +53,6 @@ public class TheatreServiceImpl implements TheatreService {
 
     @Override
     public void cities() {
-//        log.info("Adding cities");
         Stream.of("Casablanca", "Tetouan", "tanger", "Marrakech").forEach(cityName -> {
             City city = new City();
             city.setName(cityName);
@@ -119,7 +117,6 @@ public class TheatreServiceImpl implements TheatreService {
         Stream.of("13:00", "15:00", "17:00", "19:00", "21:00", "01:00").forEach(s -> {
             Session session = new Session();
             try {
-
                 session.setStartTime(dateFormat.parse(s));
                 sessionRepository.save(session);
             } catch (ParseException e) {
@@ -146,18 +143,17 @@ public class TheatreServiceImpl implements TheatreService {
     @Override
     public void movieScreenings() {
         double[] prices = new double[]{40, 50, 60, 70, 80, 90};
+        List<Movie> movieList = movieRepository.findAll();
         cityRepository.findAll().forEach(city -> {
             city.getTheatres().forEach(theatre -> {
                 theatre.getHalls().forEach(hall -> {
-                    movieRepository.findAll().forEach(movie -> {
-                        sessionRepository.findAll().forEach(session -> {
-                            MovieScreening movieScreening = new MovieScreening();
-                            movieScreening.setHall(hall);
-                            movieScreening.setMovie(movie);
-                            movieScreening.setSession(session);
-                            movieScreening.setPrice(prices[new Random().nextInt(prices.length)]);
-                            movieScreeningRepository.save(movieScreening);
-                        });
+                    sessionRepository.findAll().forEach(session -> {
+                        MovieScreening movieScreening = new MovieScreening();
+                        movieScreening.setHall(hall);
+                        movieScreening.setMovie(movieList.get(new Random().nextInt(movieList.size())));
+                        movieScreening.setSession(session);
+                        movieScreening.setPrice(prices[new Random().nextInt(prices.length)]);
+                        movieScreeningRepository.save(movieScreening);
                     });
                 });
             });
@@ -184,23 +180,22 @@ public class TheatreServiceImpl implements TheatreService {
     }
 
 
-
     @Override
     public List<TicketDTO> payForTickets(TicketsForm ticketsForm) {
-        List<TicketDTO> ticketList=new ArrayList<>();
-        ticketsForm.getTickets().forEach(ticketId ->{
-            Ticket ticket=ticketRepository.findById(ticketId).get();
+        List<TicketDTO> ticketList = new ArrayList<>();
+        ticketsForm.getTickets().forEach(ticketId -> {
+            Ticket ticket = ticketRepository.findById(ticketId).get();
             ticket.setReserved(true);
             ticket.setCustomerName(ticketsForm.getCustomerName());
             System.out.println(ticketsForm.getCustomerName());
             System.out.println(ticket.getCustomerName());
             ticket.setPaymentCode(ticketsForm.getPaymentCode());
             ticketRepository.save(ticket);
-            TicketDTO ticketDTO=new TicketDTO();
-            ticketDTO= ticketMapper.map(ticket);
+            TicketDTO ticketDTO = new TicketDTO();
+            ticketDTO = ticketMapper.map(ticket);
             System.out.println(ticketDTO.getCustomerName());
             ticketList.add(ticketDTO);
-        } );
+        });
         return ticketList;
     }
 

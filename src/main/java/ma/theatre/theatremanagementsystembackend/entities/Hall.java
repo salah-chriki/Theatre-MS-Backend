@@ -1,5 +1,6 @@
 package ma.theatre.theatremanagementsystembackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,8 +22,10 @@ public class Hall {
     @ManyToOne
     private Theatre theatre;
     @OneToMany(mappedBy = "hall")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Seat> seats;
     @OneToMany(mappedBy = "hall")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<MovieScreening> movieScreening;
 
     public Long getHallId() {

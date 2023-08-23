@@ -1,5 +1,6 @@
 package ma.theatre.theatremanagementsystembackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ public class Theatre {
     private double longitude ,latitude,altitude;
     private int numberOfHalls;
     @OneToMany(mappedBy = "theatre")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Hall> halls;
     @ManyToOne
     private City city;

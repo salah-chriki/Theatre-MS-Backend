@@ -1,5 +1,6 @@
 package ma.theatre.theatremanagementsystembackend.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +18,7 @@ public class Category {
     @Column(length=40)
     private String categoryName;
     @OneToMany(mappedBy = "category")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Movie> movies;
 
     public Long getCategoryId() {
